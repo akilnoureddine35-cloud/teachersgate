@@ -2,7 +2,7 @@
 // - The app files (html, css, js, images) are served from the phone's cache at once, and refreshed in the background.
 // - Data is never cached here: API calls are POST requests to the Apps Script backend and go straight to the network.
 // - Bump CACHE on every release so iPhones pick up the new files.
-const CACHE = 'teachersgate-web-1.8.1';
+const CACHE = 'teachersgate-web-1.9.0';
 const SHELL = [
   './', 'index.html', 'css/app.css', 'js/app.js', 'manifest.webmanifest',
   'img/logo_ouahsnan.png', 'img/logo_green_school.png',

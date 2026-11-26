@@ -4,9 +4,9 @@
 
 // ============================================================ settings
 const API_URL = 'https://script.google.com/macros/s/AKfycbw0oU6NGphnjOowb1XWzdHcpESgh0eG78vFlKOhG_iNHF6_5S9mg7QHAPW3OmQiD242tQ/exec';   // Web app URL of the Apps Script backend (see GUIDE.md)
-const VERSION = '1.8.0';
+const VERSION = '1.9.0';
 const CENTERS = {
-  ouahsnan: { nameAr: 'مركز وحسنان للتكوين', logo: 'img/logo_ouahsnan.png' },
+  ouahsnan: { nameAr: 'مركز واحسنان للتكوين و الدعم المدرسي', logo: 'img/logo_ouahsnan.png' },
   green: { nameAr: 'جرين سكول', logo: 'img/logo_green_school.png' },
 };
 // same screens, titles, subtitles, icons and sections as the Android drawer
