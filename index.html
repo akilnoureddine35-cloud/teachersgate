@@ -1,0 +1,1002 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141B7A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TeachersGate">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<title>Teachers' Gate</title>
+<style>
+  :root { --primary:#141B7A; --dark:#0A0F4A; --accent:#F2B521; --bg:#F4F5FA; --card:#FFFFFF; --ink:#191B23; --muted:#5A5D6B; --line:#E2E4EC;
+          --ok:#1B8A3A; --okbg:#DDF4E3; --warn:#B26A00; --warnbg:#FFEBC9; --err:#BA1A1A; --errbg:#FFE4E1; --blue:#1C5BD6; }
+  body[data-center="ouahsnan"] { --primary:#1C2399; --dark:#0E1260; --accent:#DE9A10; }
+  body[data-center="green"]    { --primary:#0B6B36; --dark:#00401F; --accent:#5FA800; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; height:100%; }
+  body { font-family: -apple-system, "SF Arabic", "Segoe UI", Tahoma, Arial, sans-serif; background:var(--bg); color:var(--ink);
+         -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; }
+  button, input, select { font: inherit; }
+  input { font-size:16px; } /* stops iPhone zoom on focus */
+  #app { min-height:100%; padding: calc(env(safe-area-inset-top) + 0px) 0 calc(86px + env(safe-area-inset-bottom)) 0; }
+  .wrap { padding: 16px; display:flex; flex-direction:column; gap:12px; }
+  .header { background: linear-gradient(135deg, var(--primary), var(--dark)); color:#fff; padding: calc(env(safe-area-inset-top) + 18px) 18px 20px;
+            border-radius: 0 0 28px 28px; position:relative; overflow:hidden; }
+  .header:after { content:""; position:absolute; left:0; right:0; bottom:0; height:4px; background:var(--accent); }
+  .header h1 { margin:0; font-size:21px; font-weight:800; }
+  .header p { margin:4px 0 0; opacity:.85; font-size:13px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:22px; padding:16px; }
+  .card h2 { margin:0 0 10px; font-size:16px; }
+  .row { display:flex; align-items:center; gap:10px; }
+  .grow { flex:1; min-width:0; }
+  .muted { color:var(--muted); font-size:13px; }
+  .small { font-size:12px; color:var(--muted); }
+  .sect { font-weight:800; font-size:14px; margin: 6px 2px 0; color:var(--ink); }
+  .btn { border:0; border-radius:16px; padding:14px 16px; font-weight:700; font-size:16px; background:var(--primary); color:#fff; width:100%; cursor:pointer; }
+  .btn.alt { background:#fff; color:var(--primary); border:1px solid var(--line); }
+  .btn.danger { background:var(--errbg); color:var(--err); }
+  .btn:disabled { opacity:.55; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .scrollchips { display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+  .scrollchips::-webkit-scrollbar { display:none; }
+  .chip { border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:999px; padding:8px 14px; font-size:14px; white-space:nowrap; cursor:pointer; }
+  .chip.on { background:var(--primary); border-color:var(--primary); color:#fff; font-weight:700; }
+  .field { display:flex; flex-direction:column; gap:6px; }
+  .field label { font-size:13px; color:var(--muted); font-weight:600; }
+  .input { border:1px solid var(--line); border-radius:14px; padding:12px 14px; background:#fff; width:100%; color:var(--ink); }
+  .input:focus { outline:2px solid var(--primary); border-color:transparent; }
+  .pill { display:inline-block; border-radius:999px; padding:4px 10px; font-size:12px; font-weight:700; background:var(--primary); color:#fff; }
+  .pill.soft { background:#EEF0F8; color:var(--primary); }
+  .lesson { border:1px solid var(--line); border-radius:18px; padding:14px; background:#fff; display:flex; flex-direction:column; gap:4px; cursor:pointer; text-align:start; width:100%; }
+  .lesson.done { background:var(--okbg); border-color:#B9E5C6; }
+  .lesson .time { font-weight:800; color:var(--primary); }
+  .lesson.done .time { color:var(--ok); }
+  .notice { border-radius:18px; padding:14px; background:#EEF0F8; color:var(--ink); }
+  .notice.warn { background:var(--warnbg); color:#5C3A00; }
+  .srow { background:#fff; border:1px solid var(--line); border-radius:18px; padding:10px 12px; display:flex; flex-direction:column; gap:8px; }
+  .srow.flag { border-color:#F3B7B7; background:#FFF7F6; }
+  .srow .top { display:flex; align-items:center; gap:10px; }
+  .idx { width:28px; height:28px; border-radius:50%; background:#EEF0F8; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:var(--primary); flex:0 0 auto; }
+  .code { width:86px; text-align:center; font-weight:800; font-size:17px; border:1px solid var(--line); border-radius:12px; padding:8px; }
+  .quick { display:grid; grid-template-columns: repeat(6, 1fr); gap:6px; }
+  .qb { border:0; border-radius:10px; padding:7px 0; font-size:13px; font-weight:800; background:#F1F2F7; color:var(--muted); cursor:pointer; }
+  .qb.on { background:var(--primary); color:#fff; }
+  .qb.A { color:var(--err); } .qb.A.on { background:var(--err); color:#fff; }
+  .qb.L { color:var(--warn); } .qb.L.on { background:var(--warn); color:#fff; }
+  .flagtxt { color:var(--err); font-size:12px; font-weight:700; }
+  .hint { color:var(--muted); font-size:12px; }
+  .tiles { display:grid; grid-template-columns: repeat(5, 1fr); gap:6px; }
+  .tile { border-radius:14px; padding:8px 4px; text-align:center; background:#F1F2F7; }
+  .tile b { display:block; font-size:18px; }
+  .tile span { font-size:11px; color:var(--muted); }
+  .tablewrap { overflow:auto; border:1px solid var(--line); border-radius:18px; background:#fff; -webkit-overflow-scrolling:touch; }
+  table.grid { border-collapse:separate; border-spacing:0; font-size:13px; min-width:100%; }
+  table.grid th, table.grid td { border-bottom:1px solid var(--line); border-inline-start:1px solid var(--line); padding:8px 8px; text-align:center; white-space:nowrap; }
+  table.grid th { background:#F5F6FB; position:sticky; top:0; font-weight:800; }
+  table.grid td.nm, table.grid th.nm { position:sticky; right:0; background:#fff; text-align:start; min-width:150px; z-index:1; }
+  table.grid th.nm { background:#F5F6FB; z-index:2; }
+  table.grid th small { display:block; font-weight:500; color:var(--muted); font-size:11px; }
+  table.grid th.mine { background:#E6EBFF; }
+  .gc { display:inline-block; min-width:44px; border-radius:8px; padding:4px 6px; font-weight:800; }
+  .gc.none { color:#9AA0AE; } .gc.abs { background:var(--errbg); color:var(--err); } .gc.late { background:var(--warnbg); color:var(--warn); }
+  .gc.oth { background:#E6EBFF; color:var(--blue); } .gc.ok { background:var(--okbg); color:var(--ok); }
+  .nav { position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,.97); border-top:1px solid var(--line);
+         display:grid; grid-template-columns: repeat(4,1fr); padding: 8px 6px calc(8px + env(safe-area-inset-bottom)); z-index:20; }
+  .nav button { border:0; background:none; display:flex; flex-direction:column; align-items:center; gap:3px; font-size:12px; color:var(--muted); padding:6px 0; cursor:pointer; font-weight:600; }
+  .nav button.on { color:var(--primary); font-weight:800; }
+  .nav i { width:26px; height:26px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-style:normal; font-size:15px; background:#F1F2F7; }
+  .nav button.on i { background:var(--primary); color:#fff; }
+  .overlay { position:fixed; inset:0; background:rgba(10,12,30,.45); display:flex; align-items:flex-end; justify-content:center; z-index:50; padding:12px; }
+  .sheet { background:#fff; width:100%; max-width:560px; border-radius:26px; padding:18px; max-height:80vh; overflow:auto; }
+  #toast { position:fixed; left:50%; transform:translateX(-50%); bottom:calc(100px + env(safe-area-inset-bottom)); background:#1E2030; color:#fff;
+           padding:12px 16px; border-radius:14px; font-size:14px; opacity:0; transition:opacity .2s; pointer-events:none; z-index:60; max-width:90%; text-align:center; }
+  #toast.show { opacity:1; }
+  .login { min-height:100%; display:flex; flex-direction:column; justify-content:center; gap:14px; padding:24px; background: linear-gradient(160deg, #141B7A, #0A0F4A); }
+  .login .brand { color:#fff; text-align:center; }
+  .login .brand b { display:block; font-size:28px; letter-spacing:.5px; }
+  .login .brand span { opacity:.8; font-size:14px; }
+  .login .box { background:#fff; border-radius:26px; padding:20px; display:flex; flex-direction:column; gap:12px; }
+  .spin { display:inline-block; width:16px; height:16px; border:2px solid #fff; border-top-color:transparent; border-radius:50%; animation:s 0.8s linear infinite; vertical-align:-3px; }
+  @keyframes s { to { transform: rotate(360deg); } }
+  textarea.input { min-height:72px; resize:vertical; font-family:inherit; }
+  .tools { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+  .tools .card { display:flex; flex-direction:column; gap:6px; padding:14px; }
+  .tools b { font-size:14px; }
+  .video-box { width:100%; border-radius:16px; background:#000; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<nav class="nav" id="nav" hidden></nav>
+<div id="toast"></div>
+
+<script>
+// ============================================================ settings
+// After you deploy the Apps Script backend (see GUIDE.md), paste its Web app URL here.
+const API_URL = 'https://script.google.com/macros/s/AKfycbw0oU6NGphnjOowb1XWzdHcpESgh0eG78vFlKOhG_iNHF6_5S9mg7QHAPW3OmQiD242tQ/exec';
+const VERSION = '1.8.0';
+const CENTERS = {
+  ouahsnan: { nameAr: 'مركز وحسنان للتكوين' },
+  green: { nameAr: 'جرين سكول' },
+};
+const MONTHS = ['يناير','فبراير','مارس','أبريل','ماي','يونيو','يوليوز','غشت','شتنبر','أكتوبر','نونبر','دجنبر'];
+const PRESENCE_CODES = ['A','L','H','S','M','-'];
+
+// ============================================================ state
+const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const freshAtt = () => ({ assignment: null, group: null, students: [], flags: {}, groups: [], done: [], codes: {}, start: '', end: '', type: '', exits: {}, flagKey: null, flagList: null, busy: false });
+const S = {
+  session: load('tg.session'),
+  center: load('tg.center'),
+  view: 'home',
+  busy: false,
+  loading: false,
+  assign: {},       // center -> { assignments, lessonTypes }
+  tt: null, ttAt: 0,
+  pending: null,
+  att: freshAtt(),
+  arch: { level: null, data: null, mode: 'all', month: '', group: '', q: '' },
+};
+
+// ============================================================ helpers
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const norm = s => String(s || '').replace(/[ً-ٟـ]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').toLowerCase().trim();
+const todayKey = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const timeOk = v => /^\d{1,2}:\d{2}$/.test(v || '');
+const monthLabel = key => { const [y, m] = key.split('-'); return MONTHS[+m - 1] + ' ' + y; };
+function toast(text) {
+  const t = document.getElementById('toast');
+  t.textContent = text; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function validCode(c) {
+  const s = (c || '').toUpperCase().replace(/\s/g, '');
+  if (s === '' || s === '-' || s === 'A' || s === 'P') return true;
+  if (/^\d{1,2}([.,]\d{1,2})?$/.test(s)) return parseFloat(s.replace(',', '.')) <= 20;
+  return /^((H|S|M)(P|\d{1,2})?|L\d{1,2}(\(\d{1,3}\))?)+(\(\d{1,3}\))?$/.test(s);
+}
+function describe(code) {
+  const c = (code || '').toUpperCase();
+  if (!c || c === '-') return '';
+  if (c === 'A') return 'غائب';
+  if (c === 'P') return 'حاضر (P)';
+  if (/^[\d.,]+$/.test(c)) return 'نقطة ' + c;
+  const p = [];
+  if (c.includes('L')) p.push('متأخر');
+  if (c.includes('S')) p.push('أُخرج من الحصة');
+  if (c.includes('M')) p.push('غادر مريضاً');
+  if (c.includes('H')) p.push('بدون واجب');
+  return p.join(' + ');
+}
+function categoryOf(code) {
+  const v = (code || '').toUpperCase();
+  if (!v || v === '-') return 'none';
+  if (v === 'A') return 'absent';
+  if (v.includes('L')) return 'late';
+  if (/[HSM]/.test(v)) return 'other';
+  return 'present';
+}
+function chipFor(code) {
+  const v = (code || '').toUpperCase();
+  let cls = 'ok';
+  if (!v || v === '-') cls = 'none';
+  else if (v === 'A') cls = 'abs';
+  else if (v.includes('L')) cls = 'late';
+  else if (/[HSM]/.test(v)) cls = 'oth';
+  return '<span class="gc ' + cls + '">' + esc(v || '—') + '</span>';
+}
+
+// ============================================================ API
+async function api(action, body) {
+  if (API_URL.indexOf('PASTE') === 0) throw new Error('لم يتم ضبط رابط الخادم في الملف (API_URL).');
+  const payload = Object.assign({ action: action }, body || {});
+  if (action !== 'login' && S.session) { payload.username = S.session.username; payload.token = S.session.token; }
+  const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+  const data = await res.json();
+  if (data.error) {
+    if (/انتهت الجلسة/.test(data.error)) logout(true);
+    throw new Error(data.error);
+  }
+  return data;
+}
+
+async function assignmentsOf(center) {
+  if (!S.assign[center]) S.assign[center] = await api('assignments', { center: center });
+  return S.assign[center];
+}
+async function timetableNow() {
+  if (!S.tt || Date.now() - S.ttAt > 120000) {
+    S.tt = await api('timetable');
+    S.ttAt = Date.now();
+  }
+  return S.tt;
+}
+
+// ============================================================ navigation
+const TABS = [
+  { view: 'home', icon: '⌂', label: 'الرئيسية' },
+  { view: 'att', icon: '✓', label: 'الحصة' },
+  { view: 'arch', icon: '▤', label: 'الأرشيف' },
+  { view: 'more', icon: '≡', label: 'المزيد' },
+];
+async function go(view) {
+  S.view = view;
+  if (view === 'att' || view === 'arch') { try { await assignmentsOf(S.center); } catch (e) { toast(e.message); } }
+  try { await prefetch(view); } catch (e) { toast(e.message); }
+  render();
+}
+
+function render() {
+  document.body.dataset.center = S.center || '';
+  const app = document.getElementById('app');
+  const nav = document.getElementById('nav');
+  if (!S.session) {
+    nav.hidden = true;
+    app.innerHTML = loginView();
+    return;
+  }
+  if (S.view === 'pick') { nav.hidden = true; app.innerHTML = pickView(); return; }
+  nav.hidden = false;
+  nav.innerHTML = TABS.map(t => '<button class="' + (S.view === t.view ? 'on' : '') + '" data-act="go" data-v="' + t.view + '"><i>' + t.icon + '</i>' + t.label + '</button>').join('');
+  const views = { home: homeView, att: attView, arch: archView, more: moreView, timetable: timetableView, notes: notesView, qr: qrView, requests: requestsView, library: libraryView, stats: statsView, notifs: notifsView };
+  app.innerHTML = '<div class="header"><h1>' + esc(CENTERS[S.center] ? CENTERS[S.center].nameAr : '') + '</h1>' +
+    '<p>' + esc(TITLES[S.view]) + ' — ' + esc(S.session.teacher.arabicName || S.session.teacher.name) + '</p></div>' +
+    '<div class="wrap">' + views[S.view]() + '</div>' + (S.att.flagList && S.view === 'att' ? flagDialog() : '');
+}
+const TITLES = { home: 'الرئيسية', att: 'حصة اليوم', arch: 'الأرشيف (للاطلاع فقط)', more: 'المزيد', timetable: 'الجدول الأسبوعي', notes: 'الملاحظات', qr: 'تسجيل الحضور', requests: 'الطلبات والشكايات', library: 'طباعة الدروس', stats: 'إحصائياتي', notifs: 'الإشعارات' };
+
+// ============================================================ login and center choice
+function loginView() {
+  return '<div class="login"><div class="brand"><b>Teachers\' Gate</b><span>بوابة الأساتذة</span></div>' +
+    '<form class="box" data-form="login">' +
+    '<div class="field"><label>اسم المستخدم</label><input class="input" id="lu" autocapitalize="none" autocomplete="username" required></div>' +
+    '<div class="field"><label>كلمة المرور</label><input class="input" id="lp" type="password" autocomplete="current-password" required></div>' +
+    '<button class="btn" type="submit" id="lbtn">تسجيل الدخول</button>' +
+    '</form></div>';
+}
+function pickView() {
+  const cs = S.session.teacher.centers;
+  return '<div class="header"><h1>اختر المركز</h1><p>' + esc(S.session.teacher.arabicName || S.session.teacher.name) + '</p></div>' +
+    '<div class="wrap">' + cs.map(c => '<button class="card" style="text-align:start;cursor:pointer" data-act="setCenter" data-c="' + c + '"><b style="font-size:17px">' + esc(CENTERS[c].nameAr) + '</b></button>').join('') + '</div>';
+}
+
+// ============================================================ home
+function homeView() {
+  if (!S.tt) return '<div class="card muted">جاري التحميل…</div>';
+  const today = todayKey();
+  const all = S.tt.lessons.filter(l => l.date === today);
+  const here = all.filter(l => l.center === S.center);
+  const other = all.filter(l => l.center !== S.center);
+  let html = '<div class="sect">حصص اليوم في هذا المركز</div>';
+  if (here.length === 0) {
+    html += '<div class="notice warn"><b>اليوم لا توجد لك حصص في هذا المركز.</b><div class="small" style="margin-top:4px">' +
+      (other.length ? 'لديك حصص اليوم في ' + esc(CENTERS[other[0].center].nameAr) + '. انتقل إلى ذلك المركز.' : 'اليوم يوم راحة.') + '</div></div>';
+  } else {
+    html += here.map(l => '<button class="lesson ' + (l.recorded ? 'done' : '') + '" data-act="openLesson" data-i="' + S.tt.lessons.indexOf(l) + '">' +
+      '<span class="time">' + esc(l.start) + (l.end ? ' – ' + esc(l.end) : '') + (l.recorded ? '  ✓ مسجّلة' : '') + '</span>' +
+      '<b>' + esc(l.subject) + '</b><span class="small">' + esc(l.level) + (l.group ? ' • ' + esc(l.group) : '') + '</span>' +
+      '<span class="small" style="color:var(--primary);font-weight:700">' + (l.recorded ? 'مسجّلة — تعديل الحضور' : 'اضغط لتسجيل الحضور') + '</span></button>').join('');
+  }
+  html += '<div class="sect">الخدمات</div><div class="card small">تسجيل الحضور والأرشيف من الأسفل. الطلبات والشكايات والمكتبة متوفرة في تطبيق الهاتف (Android).</div>';
+  return html;
+}
+
+// ============================================================ attendance
+function exitSlots() {
+  const g = S.att.group;
+  if (g) return [{ n: g.number, label: 'وقت خروج ' + g.name }];
+  const map = {};
+  S.att.groups.forEach(x => { (map[x.number] = map[x.number] || []).push(x.name); });
+  const ns = Object.keys(map).map(Number).sort((a, b) => a - b);
+  if (!ns.length) return [{ n: 1, label: 'وقت الخروج' }];
+  return ns.map(n => ({ n: n, label: 'وقت خروج ' + map[n].join(' / ') }));
+}
+
+function attView() {
+  const list = (S.assign[S.center] || {}).assignments || [];
+  const types = (S.assign[S.center] || {}).lessonTypes || [];
+  const a = S.att.assignment;
+  let html = '<div class="card"><h2>1. المستوى والمادة</h2><div class="chips">' +
+    (list.length ? list.map((x, i) => '<button class="chip ' + (a && a.level === x.level && a.subject === x.subject ? 'on' : '') + '" data-act="selAssign" data-i="' + i + '">' + esc(x.level) + ' • ' + esc(x.subject) + '</button>').join('')
+      : '<span class="muted">لا توجد مستويات مسندة إليك في هذا المركز.</span>') + '</div></div>';
+  if (!a) return html;
+  if (S.att.groups.length) {
+    html += '<div class="card"><h2>2. المجموعة (اختياري)</h2><div class="chips">' +
+      '<button class="chip ' + (!S.att.group ? 'on' : '') + '" data-act="selGroup" data-i="-1">كل التلاميذ</button>' +
+      S.att.groups.map((g, i) => '<button class="chip ' + (S.att.group && S.att.group.name === g.name ? 'on' : '') + '" data-act="selGroup" data-i="' + i + '">' + esc(g.name) + (S.att.done.indexOf(g.number) >= 0 ? ' ✓ مسجّلة' : '') + '</button>').join('') +
+      '</div></div>';
+  }
+  html += '<div class="card"><h2>3. معلومات الحصة</h2><div class="field" style="gap:12px">' +
+    '<div class="row"><div class="grow field"><label>البداية</label><input class="input" type="time" data-field="start" value="' + esc(S.att.start) + '"></div>' +
+    '<div class="grow field"><label>النهاية</label><input class="input" type="time" data-field="end" value="' + esc(S.att.end) + '"></div></div>' +
+    '<div class="field"><label>نوع الحصة</label><div class="chips">' + types.map(t => '<button class="chip ' + (S.att.type === t ? 'on' : '') + '" data-act="selType" data-t="' + esc(t) + '">' + esc(t) + '</button>').join('') + '</div></div>' +
+    exitSlots().map(s => '<div class="field"><label>' + esc(s.label) + '</label><input class="input" type="time" data-exit="' + s.n + '" value="' + esc(S.att.exits[s.n] || '') + '"></div>').join('') +
+    '<div class="hint">إذا تُرك وقت الخروج فارغاً يُستعمل وقت نهاية الحصة.</div></div></div>';
+
+  const flagged = S.att.students.filter(s => S.att.flags[s.row]);
+  if (flagged.length) {
+    html += '<div class="notice warn"><b>' + flagged.length + ' تلميذ يجب إرساله إلى الإدارة في أقرب وقت للتبرير</b>' +
+      flagged.map(s => '<div style="margin-top:8px"><b>' + esc(s.name) + '</b><div class="flagtxt">' + esc(S.att.flags[s.row].reasons.join(' • ')) + '</div></div>').join('') + '</div>';
+  }
+
+  html += '<div class="row"><div class="grow sect">4. التلاميذ (' + S.att.students.length + ')</div>' +
+    '<button class="chip" data-act="fillDash">الفارغ = -</button></div>';
+  html += '<div class="card" style="padding:10px;background:transparent;border:0"><div class="row" id="summary">' + summaryHtml() + '</div></div>';
+  html += S.att.students.map((s, i) => studentRow(s, i)).join('');
+  html += '<button class="btn" data-act="save" ' + (S.att.busy ? 'disabled' : '') + '>' + (S.att.busy ? '<span class="spin"></span>' : 'حفظ الحصة') + '</button>' +
+    '<div class="hint" style="text-align:center">إعادة الإرسال في نفس اليوم تُعدّل نفس الحصة. ترك الخانة فارغة يعني «-».</div>';
+  return html;
+}
+
+function studentRow(s, i) {
+  const code = S.att.codes[s.row] || '';
+  const flag = S.att.flags[s.row];
+  const hint = flag ? '<div class="flagtxt">⚠ للإدارة في أقرب وقت: ' + esc(flag.reasons.join(' • ')) + '</div>' : (describe(code) ? '<div class="hint">' + esc(describe(code)) + '</div>' : '');
+  return '<div class="srow ' + (flag ? 'flag' : '') + '" data-row="' + s.row + '">' +
+    '<div class="top"><span class="idx">' + (i + 1) + '</span><div class="grow"><b>' + esc(s.name) + '</b>' + hint + '</div>' +
+    '<input class="code" data-code="' + s.row + '" value="' + esc(code) + '" autocapitalize="characters" placeholder="-"></div>' +
+    '<div class="quick">' + quickButtons(s.row) + '</div></div>';
+}
+function quickButtons(row) {
+  const code = (S.att.codes[row] || '').toUpperCase();
+  return ['A','L','H','S','M','-'].map(f => {
+    const on = f === 'A' || f === '-' ? code === f : code.includes(f);
+    return '<button class="qb ' + f + ' ' + (on ? 'on' : '') + '" data-act="quick" data-row="' + row + '" data-f="' + f + '">' + (f === '-' ? '-' : f) + '</button>';
+  }).join('');
+}
+function paintRow(row) {
+  const el = document.querySelector('.srow[data-row="' + row + '"]');
+  if (!el) return;
+  el.querySelector('.quick').innerHTML = quickButtons(row);
+  const code = S.att.codes[row] || '';
+  const flag = S.att.flags[row];
+  const hint = el.querySelector('.grow');
+  const extra = flag ? '<div class="flagtxt">⚠ للإدارة في أقرب وقت: ' + esc(flag.reasons.join(' • ')) + '</div>' : (describe(code) ? '<div class="hint">' + esc(describe(code)) + '</div>' : '');
+  hint.innerHTML = '<b>' + esc(hint.querySelector('b').textContent) + '</b>' + extra;
+}
+function summaryHtml() {
+  const counts = { present: 0, absent: 0, late: 0, other: 0, none: 0 };
+  S.att.students.forEach(s => counts[categoryOf(S.att.codes[s.row])]++);
+  return [['present','حاضر','var(--ok)'], ['absent','غائب','var(--err)'], ['late','متأخر','var(--warn)'], ['other','أخرى','var(--blue)'], ['none','فارغ / -','var(--muted)']]
+    .map(([k, l, c]) => '<div class="tile grow" style="color:' + c + '"><b>' + counts[k] + '</b><span>' + l + '</span></div>').join('');
+}
+function refreshSummary() {
+  const el = document.getElementById('summary');
+  if (el) el.innerHTML = summaryHtml();
+}
+function flagDialog() {
+  return '<div class="overlay" data-act="closeFlags"><div class="sheet" onclick="event.stopPropagation()">' +
+    '<div class="row" style="margin-bottom:8px"><span style="font-size:22px">⚠</span><b class="grow" style="font-size:17px">ملاحظة: تلاميذ يجب إرسالهم إلى الإدارة</b></div>' +
+    '<div class="muted" style="margin-bottom:10px">أرسل هؤلاء التلاميذ إلى الإدارة في أقرب وقت لتبرير وضعيتهم، قبل تسجيل غياب اليوم. (احتساب شهر ' + esc(monthLabel(todayKey().slice(0,7))) + ')</div>' +
+    S.att.flagList.map(f => '<div style="border-top:1px solid var(--line);padding:10px 0"><b>' + esc(f.name) + '</b><div class="flagtxt">' + esc(f.reasons.join(' • ')) + '</div></div>').join('') +
+    '<button class="btn" style="margin-top:8px" data-act="closeFlags">فهمت</button></div></div>';
+}
+
+async function loadStudents() {
+  const a = S.att.assignment;
+  const r = await api('students', { center: S.center, level: a.level, subject: a.subject, group: S.att.group ? S.att.group.name : null });
+  S.att.students = r.students;
+  S.att.flags = r.flags;
+  S.att.groups = r.groups;
+  S.att.done = r.doneGroups;
+}
+function prefillFromLesson(l) {
+  S.att.start = l.start || '';
+  S.att.end = l.end || '';
+  if (l.type) S.att.type = l.type;
+}
+
+// ============================================================ archive
+function archView() {
+  const list = (S.assign[S.center] || {}).assignments || [];
+  const levels = [...new Set(list.map(x => x.level))];
+  const a = S.arch;
+  let html = '<div class="card"><h2>المستوى</h2><div class="scrollchips">' +
+    levels.map(l => '<button class="chip ' + (a.level === l ? 'on' : '') + '" data-act="archLevel" data-l="' + esc(l) + '">' + esc(l) + '</button>').join('') + '</div></div>';
+  if (!a.level) return html + '<div class="card muted">اختر مستوى لعرض حصصه.</div>';
+  if (!a.data) return html + '<div class="card muted">جاري التحميل…</div>';
+  const d = a.data;
+  const months = [...new Set(d.columns.map(c => c.date.slice(0, 7)))].sort().reverse();
+  const cols = d.columns.filter(c => (a.mode === 'all' || c.owned) && (!a.month || c.date.slice(0, 7) === a.month));
+  const group = d.groups.find(g => g.name === a.group);
+  const members = group ? group.students.map(norm) : null;
+  let students = d.students.filter(s => !members || members.indexOf(norm(s.name)) >= 0);
+  const q = norm(a.q);
+  let shownCols = cols;
+  if (q) {
+    const byName = students.filter(s => norm(s.name).includes(q));
+    if (byName.length) students = byName;
+    else shownCols = cols.filter(c => norm(c.header + ' ' + c.subject + ' ' + c.type).includes(q));
+  }
+  html += '<div class="card"><div class="field" style="gap:12px">' +
+    '<div class="field"><label>الحصص</label><div class="scrollchips">' +
+      '<button class="chip ' + (a.mode === 'all' ? 'on' : '') + '" data-act="archMode" data-v="all">كل الحصص</button>' +
+      '<button class="chip ' + (a.mode === 'mine' ? 'on' : '') + '" data-act="archMode" data-v="mine">حصصي</button></div></div>' +
+    '<div class="field"><label>الشهر</label><div class="scrollchips">' +
+      '<button class="chip ' + (!a.month ? 'on' : '') + '" data-act="archMonth" data-v="">كل الأشهر</button>' +
+      months.map(m => '<button class="chip ' + (a.month === m ? 'on' : '') + '" data-act="archMonth" data-v="' + m + '">' + esc(monthLabel(m)) + '</button>').join('') + '</div></div>' +
+    '<div class="field"><label>التلاميذ</label><div class="scrollchips">' +
+      '<button class="chip ' + (!a.group ? 'on' : '') + '" data-act="archGroup" data-v="">كل التلاميذ</button>' +
+      d.groups.map(g => '<button class="chip ' + (a.group === g.name ? 'on' : '') + '" data-act="archGroup" data-v="' + esc(g.name) + '">' + esc(g.name) + '</button>').join('') + '</div></div>' +
+    '<input class="input" data-field="archQ" placeholder="ابحث باسم التلميذ أو بتاريخ الحصة أو المادة" value="' + esc(a.q) + '">' +
+    '</div></div>';
+  html += '<div class="row small"><span class="pill soft">' + shownCols.length + ' حصة</span><span class="pill soft">' + students.length + ' تلميذ</span>' + (d.points ? '<span class="pill soft">النقاط ظاهرة</span>' : '') + '</div>';
+  if (!shownCols.length || !students.length) return html + '<div class="card muted">لا توجد نتائج.</div>';
+  html += '<div class="tablewrap"><table class="grid"><thead><tr><th class="nm">التلميذ</th>' +
+    (d.points ? '<th>النقاط</th>' : '') +
+    shownCols.map(c => '<th class="' + (c.owned ? 'mine' : '') + '">' + esc(c.header) + '<small>' + esc(c.subject) + '</small><small>' + esc([c.type, c.start].filter(Boolean).join(' • ')) + '</small></th>').join('') +
+    '</tr></thead><tbody>' +
+    students.map((s, i) => '<tr><td class="nm">' + (i + 1) + '. ' + esc(s.name) + '</td>' + (d.points ? '<td><b>' + esc(d.points[s.row] || '—') + '</b></td>' : '') +
+      shownCols.map(c => '<td>' + chipFor(c.codes[s.row]) + '</td>').join('') + '</tr>').join('') +
+    '</tbody></table></div>';
+  return html;
+}
+
+// ============================================================ more
+function moreView() {
+  const cs = S.session.teacher.centers;
+  return toolsGrid() + '<div class="card"><div class="muted">الأستاذ</div><b style="font-size:17px">' + esc(S.session.teacher.arabicName || S.session.teacher.name) + '</b></div>' +
+    '<div class="card"><h2>المركز</h2><div class="chips">' + cs.map(c => '<button class="chip ' + (c === S.center ? 'on' : '') + '" data-act="setCenter" data-c="' + c + '">' + esc(CENTERS[c].nameAr) + '</button>').join('') + '</div></div>' +
+    '<div class="card"><h2>كيف تستعمل التطبيق</h2><ol style="margin:0;padding-inline-start:20px;line-height:1.9">' +
+      '<li>من «الحصة» اختر المستوى والمادة، ثم المجموعة إن لزم.</li>' +
+      '<li>اكتب رموز التلاميذ أو اضغط الأزرار (A غائب، L متأخر، H واجب، S أُخرج، M مريض، - غير معني).</li>' +
+      '<li>اضغط «حفظ الحصة». الفارغ يُحفظ «-» تلقائياً.</li>' +
+      '<li>التلميذ الذي تكرر عنده الغياب أو التأخر أكثر من 3 مرات في الشهر، أو أُخرج من حصة ولم يدخل بعدها، يظهر تنبيه يطلب إرساله إلى الإدارة.</li>' +
+      '<li>«الأرشيف» للاطلاع فقط.</li></ol></div>' +
+    '<div class="card"><button class="btn danger" data-act="logout">تسجيل الخروج</button></div>' +
+    '<div class="hint" style="text-align:center">Teachers\' Gate ' + VERSION + ' — نسخة الويب</div>';
+}
+
+// ============================================================ actions
+const actions = {
+  go: d => go(d.v),
+  setCenter: async d => {
+    S.center = d.c; save('tg.center', S.center);
+    S.att = freshAtt(); S.arch = { level: null, data: null, mode: 'all', month: '', group: '', q: '' };
+    await go(S.view === 'pick' ? 'home' : S.view);
+  },
+  logout: (d, el, silent) => logout(silent === true),
+  openLesson: async d => {
+    const l = S.tt.lessons[+d.i];
+    S.pending = l;
+    S.att = freshAtt();
+    await go('att');
+    await selectAssign(findAssign(l.level, l.subject), l);
+  },
+  selAssign: async d => {
+    const list = S.assign[S.center].assignments;
+    await selectAssign(list[+d.i], null);
+  },
+  selGroup: async d => {
+    S.att.group = +d.i < 0 ? null : S.att.groups[+d.i];
+    S.att.codes = {};
+    S.att.exits = {};
+    await loadStudents();
+    render();
+  },
+  selType: d => { S.att.type = d.t; render(); },
+  quick: (d) => {
+    const row = d.row, f = d.f;
+    const cur = (S.att.codes[row] || '').toUpperCase();
+    let next;
+    if (f === 'A' || f === '-') next = cur === f ? '' : f;
+    else next = cur.includes(f) ? cur.replace(f, '') : f + cur.replace(/^A|^-/, '');
+    S.att.codes[row] = next;
+    paintRow(row);
+    refreshSummary();
+  },
+  fillDash: () => {
+    S.att.students.forEach(s => { if (!S.att.codes[s.row]) S.att.codes[s.row] = '-'; });
+    render();
+  },
+  closeFlags: (d, el, ev) => { if (ev && ev.target !== el) return; S.att.flagList = null; render(); },
+  save: async () => {
+    if (S.att.busy) return;
+    const a = S.att.assignment;
+    if (!a) return toast('اختر المستوى والمادة.');
+    const grades = {}, bad = [];
+    S.att.students.forEach(s => {
+      const raw = (S.att.codes[s.row] || '').trim().toUpperCase();
+      if (!validCode(raw)) bad.push(s.name);
+      grades[s.row] = raw === '' ? '-' : raw;
+    });
+    if (bad.length) return toast('رموز غير صالحة: ' + bad.slice(0, 3).join('، '));
+    if (!timeOk(S.att.start)) return toast('أدخل وقت بداية الحصة.');
+    if (!S.att.type) return toast('اختر نوع الحصة.');
+    const exits = {};
+    for (const slot of exitSlots()) {
+      const v = (S.att.exits[slot.n] || '').trim() || S.att.end;
+      if (!timeOk(v)) return toast('أدخل وقت الخروج لكل مجموعة (أو وقت نهاية الحصة).');
+      exits[slot.n] = v;
+    }
+    S.att.busy = true; render();
+    try {
+      const r = await api('save', {
+        center: S.center, level: a.level, subject: a.subject,
+        group: S.att.group ? S.att.group.name : null, date: todayKey(),
+        start: S.att.start, type: S.att.type, exits: exits, grades: grades,
+      });
+      toast(r.overwritten ? 'تم تحديث حصة اليوم' : 'تم حفظ الحصة');
+      S.tt = null;
+      S.att.codes = {};
+      await loadStudents();
+    } catch (e) { toast(e.message); }
+    S.att.busy = false;
+    render();
+  },
+  archLevel: async d => {
+    S.arch.level = d.l; S.arch.data = null; S.arch.group = ''; S.arch.month = ''; render();
+    try { S.arch.data = await api('archive', { center: S.center, level: d.l }); } catch (e) { toast(e.message); }
+    render();
+  },
+  archMode: d => { S.arch.mode = d.v; render(); },
+  archMonth: d => { S.arch.month = d.v; render(); },
+  archGroup: d => { S.arch.group = d.v; render(); },
+};
+
+function findAssign(level, subject) {
+  return (S.assign[S.center].assignments || []).find(x => norm(x.level) === norm(level) && norm(x.subject) === norm(subject));
+}
+
+async function selectAssign(a, lesson) {
+  if (!a) return toast('هذه الحصة ليست من مستوياتك في هذا المركز.');
+  S.att = freshAtt();
+  S.att.assignment = a;
+  try {
+    await loadStudents();
+  } catch (e) { toast(e.message); }
+  // the lesson of today (from home) or today's timetable pre-fills the times and the type
+  const today = todayKey();
+  const tt = S.tt ? S.tt.lessons.filter(l => l.center === S.center && l.date === today && norm(l.level) === norm(a.level) && norm(l.subject) === norm(a.subject)) : [];
+  const l = lesson || tt[0];
+  if (l) {
+    prefillFromLesson(l);
+    if (l.group) {
+      const g = S.att.groups.find(x => norm(x.name) === norm(l.group));
+      if (g) { S.att.group = g; await loadStudents(); }
+    }
+  }
+  const key = a.level + '|' + a.subject;
+  if (Object.keys(S.att.flags).length) S.att.flagList = Object.values(S.att.flags);
+  S.att.flagKey = key;
+  render();
+}
+
+// ============================================================ v1.8.0 web: timetable, notes, QR, requests, library, stats, notices
+Object.assign(S, {
+  notes: { mode: 'mine', level: null, data: null, edit: null, draft: {}, newKey: null, newData: null, newLevel: null, newSubject: null },
+  qr: { today: null },
+  req: { tab: 'req', track: null },
+  lib: { opts: null, optsCenter: null },
+  stats: null,
+  notifs: null,
+  ans: {},
+  form: {},
+  cam: null,
+  camTimer: null,
+});
+const DAYS_AR = ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'];
+const wc = s => String(s || '').trim().split(/\s+/).filter(Boolean).length;
+const loadingCard = () => '<div class="card muted">جاري التحميل…</div>';
+const assignLevels = () => [...new Set(((S.assign[S.center] || {}).assignments || []).map(x => x.level))];
+
+async function prefetch(view) {
+  if (view === 'home' || view === 'att' || view === 'timetable') return timetableNow();
+  if (view === 'qr') { S.qr.today = null; S.qr.today = await api('qrToday', { center: S.center }); }
+  if (view === 'library' && (!S.lib.opts || S.lib.optsCenter !== S.center)) {
+    S.lib.opts = await api('libraryOptions', { center: S.center });
+    S.lib.optsCenter = S.center;
+  }
+  if (view === 'stats') { S.stats = null; S.stats = await api('stats', { center: S.center }); }
+  if (view === 'notifs') { S.notifs = null; S.notifs = await api('ads', { center: S.center }); }
+}
+
+function toolsGrid() {
+  const tools = [
+    ['timetable', '▦', 'الجدول الأسبوعي'], ['notes', '✎', 'الملاحظات'], ['qr', '⌖', 'تسجيل الحضور (QR)'],
+    ['requests', '✉', 'الطلبات والشكايات'], ['library', '⎙', 'طباعة الدروس'], ['stats', '▲', 'إحصائياتي'], ['notifs', '!', 'الإشعارات'],
+  ];
+  return '<div class="sect">الأدوات</div><div class="tools">' + tools.map(([v, ic, l]) =>
+    '<button class="card" data-act="go" data-v="' + v + '"><span style="font-size:22px">' + ic + '</span><b>' + l + '</b></button>').join('') + '</div>';
+}
+
+// ---- timetable (all centers: this week)
+function timetableView() {
+  if (!S.tt) return loadingCard();
+  const html = DAYS_AR.map((dn, dow) => {
+    const items = S.tt.lessons.map((l, i) => ({ l: l, i: i })).filter(x => x.l.dow === dow)
+      .sort((a, b) => (a.l.start || '').localeCompare(b.l.start || ''));
+    if (!items.length) return '';
+    return '<div class="sect">' + dn + '</div>' + items.map(x =>
+      '<button class="lesson ' + (x.l.recorded ? 'done' : '') + '" data-act="openTT" data-i="' + x.i + '">' +
+      '<span class="time">' + esc(x.l.start) + (x.l.end ? ' – ' + esc(x.l.end) : '') + (x.l.recorded ? ' ✓ مسجّلة' : '') + '</span>' +
+      '<b>' + esc(x.l.subject) + '</b><span class="small">' + esc(x.l.level) + (x.l.group ? ' • ' + esc(x.l.group) : '') + ' • ' + esc(CENTERS[x.l.center].nameAr) + '</span></button>').join('');
+  }).join('');
+  return html || '<div class="card muted">لا توجد حصص في جدولك هذا الأسبوع.</div>';
+}
+
+// ---- notes: my notes (editable), all notes (read only), new note
+function notesView() {
+  const n = S.notes;
+  const modes = [['mine', 'ملاحظاتي'], ['all', 'ملاحظات الأساتذة'], ['new', 'ملاحظة جديدة']];
+  let html = '<div class="scrollchips">' + modes.map(([k, l]) => '<button class="chip ' + (n.mode === k ? 'on' : '') + '" data-act="notesMode" data-m="' + k + '">' + l + '</button>').join('') + '</div>';
+  if (n.mode === 'new') return html + newNoteView();
+  const levels = assignLevels();
+  html += '<div class="scrollchips">' + levels.map(l => '<button class="chip ' + (n.level === l ? 'on' : '') + '" data-act="notesLevel" data-l="' + esc(l) + '">' + esc(l) + '</button>').join('') + '</div>';
+  if (!n.level) return html + '<div class="card muted">اختر المستوى.</div>';
+  if (!n.data) return html + loadingCard();
+  const cols = n.mode === 'mine' ? n.data.columns.filter(c => c.owned) : n.data.columns;
+  if (!cols.length) return html + '<div class="card muted">لا توجد ملاحظات في هذا المستوى.</div>';
+  return html + cols.map(c => {
+    const editing = n.edit === c.index;
+    const head = '<div class="row"><b class="grow">' + esc(c.month || '') + ' • ' + esc(c.subject) + '</b>' +
+      (c.owned && n.mode === 'mine' ? '<button class="chip" data-act="notesEdit" data-c="' + c.index + '">' + (editing ? 'إلغاء' : 'تعديل') + '</button>' : '') + '</div>' +
+      '<div class="small">' + (c.author ? 'الأستاذ: ' + esc(c.author) : '') + '</div>';
+    const body = editing
+      ? n.data.students.map(s => '<div class="field" style="margin-top:8px"><label>' + esc(s.name) + '</label><textarea class="input" data-note="' + s.row + '">' + esc(c.codes[s.row] || '') + '</textarea></div>').join('') +
+        '<button class="btn" style="margin-top:10px" data-act="notesSaveEdit" data-c="' + c.index + '">حفظ التعديل</button>'
+      : n.data.students.filter(s => c.codes[s.row]).map(s => '<div style="border-top:1px solid var(--line);padding:8px 0"><b>' + esc(s.name) + '</b><div style="margin-top:4px;line-height:1.6">' + esc(c.codes[s.row]) + '</div></div>').join('') || '<div class="small" style="margin-top:8px">لا توجد ملاحظات مكتوبة.</div>';
+    return '<div class="card">' + head + body + '</div>';
+  }).join('');
+}
+function newNoteView() {
+  const n = S.notes;
+  const list = (S.assign[S.center] || {}).assignments || [];
+  let html = '<div class="card"><h2>المستوى والمادة</h2><div class="chips">' + list.map((x, i) =>
+    '<button class="chip ' + (n.newKey === x.level + '|' + x.subject ? 'on' : '') + '" data-act="notesNewPick" data-i="' + i + '">' + esc(x.level) + ' • ' + esc(x.subject) + '</button>').join('') + '</div></div>';
+  if (!n.newData) return html + (n.newKey ? loadingCard() : '');
+  html += n.newData.students.map((s, i) => '<div class="srow"><div class="top"><span class="idx">' + (i + 1) + '</span><b class="grow">' + esc(s.name) + '</b></div>' +
+    '<textarea class="input" data-note="' + s.row + '" placeholder="الملاحظة (30 كلمة كحد أقصى)">' + esc(n.draft[s.row] || '') + '</textarea></div>').join('');
+  return html + '<button class="btn" data-act="notesSaveNew">حفظ الملاحظات</button>';
+}
+
+// ---- QR clock in / out
+function qrView() {
+  const t = S.qr.today;
+  let html = '<div class="card"><h2>حضورك اليوم</h2>' + (t ? '<div class="row"><div class="grow"><div class="muted">الدخول</div><b style="font-size:20px">' + esc(t.clockIn || '—') + '</b></div><div class="grow"><div class="muted">الخروج</div><b style="font-size:20px">' + esc(t.clockOut || '—') + '</b></div></div>' : loadingCard()) + '</div>';
+  html += '<div class="card"><h2>تسجيل الدخول أو الخروج</h2>' +
+    '<div class="field"><label>رمز المركز (QR)</label><input class="input" data-k="qrCode" value="' + esc(S.form.qrCode || '') + '" autocapitalize="characters" placeholder="اكتب الرمز الموجود عند المدخل"></div>' +
+    '<button class="btn alt" style="margin-top:10px" data-act="qrCamera">📷 مسح الرمز بالكاميرا</button>' +
+    '<button class="btn" style="margin-top:10px" data-act="qrSubmit">تسجيل</button>' +
+    '<div class="hint" style="margin-top:8px">المسح بالكاميرا يعمل في المتصفحات التي تدعم قارئ الرموز. إذا لم يعمل على iPhone، اكتب الرمز يدوياً.</div></div>';
+  return html;
+}
+
+// ---- requests and complaints
+function requestsView() {
+  const r = S.req;
+  const tabs = [['req', 'طلب حصة'], ['comp', 'الشكايات'], ['track', 'متابعة طلباتي']];
+  let html = '<div class="scrollchips">' + tabs.map(([k, l]) => '<button class="chip ' + (r.tab === k ? 'on' : '') + '" data-act="reqTab" data-t="' + k + '">' + l + '</button>').join('') + '</div>';
+  if (r.tab === 'req') {
+    html += '<div class="card"><div class="field"><label>نوع الطلب</label><div class="chips">' +
+      ['إضافة حصة', 'تأجيل حصة'].map(t => '<button class="chip ' + (S.form.reqType === t ? 'on' : '') + '" data-act="reqType" data-v="' + t + '">' + t + '</button>').join('') +
+      '</div></div><div class="field" style="margin-top:12px"><label>التفاصيل</label><textarea class="input" data-k="reqDetails">' + esc(S.form.reqDetails || '') + '</textarea></div>' +
+      '<button class="btn" style="margin-top:12px" data-act="sendReq">إرسال الطلب</button></div>';
+  }
+  if (r.tab === 'comp') {
+    html += '<div class="card"><div class="field"><label>العنوان</label><input class="input" data-k="compTitle" value="' + esc(S.form.compTitle || '') + '"></div>' +
+      '<div class="field" style="margin-top:12px"><label>الرسالة</label><textarea class="input" data-k="compMsg">' + esc(S.form.compMsg || '') + '</textarea></div>' +
+      '<button class="btn" style="margin-top:12px" data-act="sendComp">إرسال الشكاية</button></div>';
+  }
+  if (r.tab === 'track') {
+    if (!r.track) return html + loadingCard();
+    const items = [].concat(r.track.requests.map(x => Object.assign({ kind: 'طلب' }, x)), r.track.complaints.map(x => Object.assign({ kind: 'شكاية' }, x)));
+    html += items.length ? items.map(x => '<div class="card"><div class="row"><b class="grow">' + esc(x.kind) + ': ' + esc(x.title) + '</b><span class="pill soft">' + esc(x.status || '—') + '</span></div>' +
+      '<div class="small">' + esc(x.date) + '</div>' + (x.details ? '<div style="margin-top:6px;line-height:1.6">' + esc(x.details) + '</div>' : '') +
+      (x.reply ? '<div class="notice" style="margin-top:8px"><b>رد الإدارة:</b> ' + esc(x.reply) + '</div>' : '') + '</div>').join('')
+      : '<div class="card muted">لا توجد طلبات أو شكايات بعد.</div>';
+  }
+  return html;
+}
+
+// ---- library: print report (paper type can be picked from the list or typed)
+function libraryView() {
+  const o = S.lib.opts;
+  if (!o) return loadingCard();
+  const levels = assignLevels();
+  return '<div class="card"><h2>تقرير طباعة الدروس</h2>' +
+    '<div class="field"><label>نوع الورق</label><input class="input" list="dl-types" data-k="libType" value="' + esc(S.form.libType || '') + '"><datalist id="dl-types">' + o.types.map(t => '<option value="' + esc(t) + '">').join('') + '</datalist></div>' +
+    '<div class="field" style="margin-top:12px"><label>حجم الورقة</label><input class="input" list="dl-sizes" data-k="libSize" value="' + esc(S.form.libSize || '') + '"><datalist id="dl-sizes">' + o.sizes.map(t => '<option value="' + esc(t) + '">').join('') + '</datalist></div>' +
+    '<div class="field" style="margin-top:12px"><label>عدد النسخ المطبوعة</label><input class="input" type="number" inputmode="numeric" min="1" data-k="libQty" value="' + esc(S.form.libQty || '') + '"></div>' +
+    '<div class="field" style="margin-top:12px"><label>المستوى الدراسي</label><div class="chips">' + levels.map(l => '<button class="chip ' + (S.form.libLevel === l ? 'on' : '') + '" data-act="libLevel" data-l="' + esc(l) + '">' + esc(l) + '</button>').join('') + '</div></div>' +
+    '<button class="btn" style="margin-top:14px" data-act="sendLib">إرسال التقرير إلى الإدارة</button></div>';
+}
+
+// ---- statistics (this center only)
+function statsView() {
+  const s = S.stats;
+  if (!s) return loadingCard();
+  const a = s.arrivals, tot = a.early + a.onTime + a.late;
+  const pct = n => (tot ? Math.round(n * 100 / tot) : 0);
+  let html = '<div class="card"><h2>الوصول إلى الحصة</h2>' + (tot
+    ? '<div class="tiles" style="grid-template-columns:repeat(3,1fr)"><div class="tile"><b>' + a.early + '</b><span>قبل الوقت</span></div><div class="tile"><b>' + a.onTime + '</b><span>في الوقت</span></div><div class="tile"><b>' + a.late + '</b><span>متأخر</span></div></div>' +
+      '<div class="small" style="margin-top:8px">قبل الوقت ' + pct(a.early) + '٪ • في الوقت ' + pct(a.onTime) + '٪ • متأخر ' + pct(a.late) + '٪</div>'
+    : '<div class="muted">لا توجد بيانات بعد.</div>') + '</div>';
+  html += '<div class="card"><h2>الحصص المسجّلة</h2>' + (s.lessonRows.length
+    ? s.lessonRows.map(r => '<div style="border-top:1px solid var(--line);padding:8px 0"><b>' + esc(r.level) + '</b><div class="small">' + Object.keys(r.counts).map(t => esc(t) + ': ' + r.counts[t]).join(' • ') + '</div></div>').join('')
+    : '<div class="muted">لا توجد حصص مسجّلة بعد.</div>') + '</div>';
+  html += '<div class="card"><h2>التلاميذ</h2>' + s.students.map(x => '<div class="row" style="border-top:1px solid var(--line);padding:8px 0"><div class="grow"><b>' + esc(x.level) + '</b><div class="small">' + esc(x.subject) + '</div></div><span class="pill soft">' + x.students + ' تلميذ</span></div>').join('') + '</div>';
+  const rq = Object.keys(s.requests);
+  html += '<div class="card"><h2>الطلبات والشكايات</h2><div class="small">' + (rq.length ? rq.map(k => esc(k) + ': ' + s.requests[k]).join(' • ') : 'لا توجد طلبات') + '</div>' +
+    '<div class="small" style="margin-top:6px">الشكايات: ' + s.complaints + ' (أُجيب على ' + s.complaintsAnswered + ')</div></div>';
+  html += '<div class="card"><h2>الإدارة</h2><div class="small">رسائل الإدارة: ' + s.adminMessages + ' • الردود المرسلة: ' + s.answersSent + ' • الملاحظات المكتوبة: ' + s.notesWritten + '</div></div>';
+  return html;
+}
+
+// ---- notices from the administration (ADS)
+function notifsView() {
+  if (!S.notifs) return loadingCard();
+  const list = S.notifs.messages;
+  if (!list.length) return '<div class="card muted">لا توجد رسائل من الإدارة.</div>';
+  return list.map((m, i) => '<div class="card"><div class="small">' + (m.broadcast ? 'إلى جميع الأساتذة' : 'موجّهة إليك') + (m.confirmed ? ' • ✓ تم التأكيد' : '') + '</div>' +
+    '<div style="margin:8px 0;font-size:15px;line-height:1.7">' + esc(m.text) + '</div>' +
+    (m.needsAnswer
+      ? (m.answer ? '<div class="notice" style="margin-bottom:8px"><b>ردّك:</b> ' + esc(m.answer) + '</div>' : '') +
+        '<textarea class="input" data-ans="' + m.row + '" placeholder="اكتب ردّك">' + esc(S.ans[m.row] || '') + '</textarea>' +
+        '<button class="btn" style="margin-top:8px" data-act="ansMsg" data-i="' + i + '">إرسال الرد</button>'
+      : (m.confirmed ? '' : '<button class="btn alt" data-act="ansMsg" data-i="' + i + '">تأكيد الاستلام</button>')) + '</div>').join('');
+}
+
+// ---- camera scan (browsers with a QR reader); manual entry always works
+async function openCamera() {
+  if (!('BarcodeDetector' in window) || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+    return toast('المسح بالكاميرا غير مدعوم في هذا المتصفح. اكتب الرمز يدوياً.');
+  }
+  const ov = document.createElement('div');
+  ov.className = 'overlay'; ov.id = 'camov';
+  ov.innerHTML = '<div class="sheet" style="text-align:center"><video id="cam" class="video-box" playsinline muted autoplay></video>' +
+    '<button class="btn alt" style="margin-top:12px" data-act="qrCameraStop">إغلاق</button></div>';
+  document.body.appendChild(ov);
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    S.cam = stream;
+    const v = document.getElementById('cam');
+    v.srcObject = stream;
+    const detector = new BarcodeDetector({ formats: ['qr_code'] });
+    const tick = async () => {
+      if (!S.cam) return;
+      try {
+        const found = await detector.detect(v);
+        if (found.length) {
+          closeCamera();
+          S.form.qrCode = found[0].rawValue;
+          render();
+          await actions.qrSubmit();
+          return;
+        }
+      } catch (e) { /* keep scanning */ }
+      S.camTimer = setTimeout(tick, 400);
+    };
+    tick();
+  } catch (e) {
+    closeCamera();
+    toast('لا يمكن فتح الكاميرا. اكتب الرمز يدوياً.');
+  }
+}
+function closeCamera() {
+  if (S.cam) { S.cam.getTracks().forEach(t => t.stop()); S.cam = null; }
+  clearTimeout(S.camTimer);
+  const ov = document.getElementById('camov');
+  if (ov) ov.remove();
+}
+
+async function loadNotes() {
+  S.notes.data = null;
+  render();
+  S.notes.data = await api('notes', { center: S.center, level: S.notes.level });
+  render();
+}
+
+Object.assign(actions, {
+  openTT: async d => {
+    const l = S.tt.lessons[+d.i];
+    if (l.center !== S.center) return toast('هذه الحصة في ' + CENTERS[l.center].nameAr + '. بدّل المركز أولاً.');
+    S.pending = l;
+    S.att = freshAtt();
+    await go('att');
+    await selectAssign(findAssign(l.level, l.subject), l);
+  },
+  notesMode: async d => {
+    S.notes.mode = d.m; S.notes.edit = null;
+    if (d.m !== 'new' && S.notes.level) return loadNotes();
+    render();
+  },
+  notesLevel: async d => { S.notes.level = d.l; S.notes.edit = null; await loadNotes(); },
+  notesEdit: d => {
+    const c = +d.c;
+    if (S.notes.edit === c) { S.notes.edit = null; } else {
+      const col = S.notes.data.columns.find(x => x.index === c);
+      S.notes.edit = c;
+      S.notes.draft = Object.assign({}, col.codes);
+    }
+    render();
+  },
+  notesSaveEdit: async d => {
+    const notes = Object.assign({}, S.notes.draft);
+    if (Object.keys(notes).some(r => wc(notes[r]) > 30)) return toast('الملاحظة تتجاوز 30 كلمة.');
+    try {
+      await api('editNote', { center: S.center, level: S.notes.level, col: +d.c, notes: notes });
+      toast('تم حفظ التعديل');
+      S.notes.edit = null;
+      await loadNotes();
+    } catch (e) { toast(e.message); }
+  },
+  notesNewPick: async d => {
+    const a = S.assign[S.center].assignments[+d.i];
+    Object.assign(S.notes, { newKey: a.level + '|' + a.subject, newLevel: a.level, newSubject: a.subject, newData: null, draft: {} });
+    render();
+    S.notes.newData = await api('notes', { center: S.center, level: a.level });
+    render();
+  },
+  notesSaveNew: async () => {
+    const n = S.notes, notes = {};
+    Object.keys(n.draft).forEach(r => { const v = (n.draft[r] || '').trim(); if (v) notes[r] = v; });
+    if (!Object.keys(notes).length) return toast('اكتب ملاحظة لتلميذ واحد على الأقل.');
+    if (Object.keys(notes).some(r => wc(notes[r]) > 30)) return toast('الملاحظة تتجاوز 30 كلمة.');
+    try {
+      await api('saveNote', { center: S.center, level: n.newLevel, subject: n.newSubject, notes: notes });
+      toast('تم حفظ الملاحظات');
+      Object.assign(n, { mode: 'mine', level: n.newLevel, newKey: null, newData: null, draft: {} });
+      await loadNotes();
+    } catch (e) { toast(e.message); }
+  },
+  qrSubmit: async () => {
+    const code = (S.form.qrCode || '').trim();
+    if (!code) return toast('اكتب الرمز أولاً.');
+    try {
+      const r = await api('qrScan', { center: S.center, code: code });
+      S.form.qrCode = '';
+      toast(r.outcome === 'in' ? 'تم تسجيل دخولك إلى المركز' : 'تم تسجيل خروجك من المركز');
+      S.qr.today = await api('qrToday', { center: S.center });
+      render();
+    } catch (e) { toast(e.message); }
+  },
+  qrCamera: () => openCamera(),
+  qrCameraStop: () => closeCamera(),
+  reqTab: async d => {
+    S.req.tab = d.t;
+    if (d.t === 'track') {
+      S.req.track = null;
+      render();
+      S.req.track = await api('track', { center: S.center });
+    }
+    render();
+  },
+  reqType: d => { S.form.reqType = d.v; render(); },
+  sendReq: async () => {
+    const type = S.form.reqType, details = (S.form.reqDetails || '').trim();
+    if (!type) return toast('اختر نوع الطلب.');
+    try {
+      await api('submitRequest', { center: S.center, type: type, details: details });
+      S.form.reqType = ''; S.form.reqDetails = '';
+      toast('تم إرسال الطلب');
+      render();
+    } catch (e) { toast(e.message); }
+  },
+  sendComp: async () => {
+    const title = (S.form.compTitle || '').trim(), message = (S.form.compMsg || '').trim();
+    if (!title || !message) return toast('أدخل العنوان والرسالة.');
+    try {
+      await api('submitComplaint', { center: S.center, title: title, message: message });
+      S.form.compTitle = ''; S.form.compMsg = '';
+      toast('تم إرسال الشكاية');
+      render();
+    } catch (e) { toast(e.message); }
+  },
+  libLevel: d => { S.form.libLevel = d.l; render(); },
+  sendLib: async () => {
+    try {
+      await api('submitLibrary', { center: S.center, type: S.form.libType, size: S.form.libSize, quantity: S.form.libQty, level: S.form.libLevel });
+      S.form.libQty = '';
+      toast('تم إرسال التقرير إلى الإدارة');
+      render();
+    } catch (e) { toast(e.message); }
+  },
+  ansMsg: async d => {
+    const m = S.notifs.messages[+d.i];
+    const answer = (S.ans[m.row] || '').trim();
+    if (m.needsAnswer && !answer) return toast('اكتب ردّك أولاً.');
+    try {
+      await api('answerAd', { center: S.center, row: m.row, text: m.text, answer: answer });
+      toast('تم الإرسال');
+      S.notifs = await api('ads', { center: S.center });
+      render();
+    } catch (e) { toast(e.message); }
+  },
+});
+
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.k) S.form[t.dataset.k] = t.value;
+  else if (t.dataset.note) S.notes.draft[t.dataset.note] = t.value;
+  else if (t.dataset.ans) S.ans[t.dataset.ans] = t.value;
+});
+
+// ============================================================ events
+document.addEventListener('click', async (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  if (el.dataset.act === 'closeFlags' && e.target.closest('.sheet') && !e.target.closest('.btn')) return;
+  const fn = actions[el.dataset.act];
+  if (!fn) return;
+  try { await fn(el.dataset, el, e); } catch (err) { toast(err.message); }
+});
+
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.code) {
+    S.att.codes[t.dataset.code] = t.value.toUpperCase();
+    t.value = S.att.codes[t.dataset.code];
+    paintRow(t.dataset.code);
+    refreshSummary();
+  } else if (t.dataset.field === 'start' || t.dataset.field === 'end') {
+    S.att[t.dataset.field] = t.value;
+  } else if (t.dataset.exit) {
+    S.att.exits[t.dataset.exit] = t.value;
+  } else if (t.dataset.field === 'archQ') {
+    S.arch.q = t.value;
+    const pos = t.selectionStart;
+    render();
+    const again = document.querySelector('[data-field="archQ"]');
+    if (again) { again.focus(); again.setSelectionRange(pos, pos); }
+  }
+});
+
+document.addEventListener('submit', async (e) => {
+  if (e.target.dataset.form !== 'login') return;
+  e.preventDefault();
+  const btn = document.getElementById('lbtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  try {
+    const u = document.getElementById('lu').value.trim();
+    const p = document.getElementById('lp').value;
+    const r = await api('login', { username: u, password: p });
+    S.session = { username: u, token: r.token, teacher: r.teacher };
+    save('tg.session', S.session);
+    S.assign = {};
+    if (r.teacher.centers.length === 1) {
+      S.center = r.teacher.centers[0];
+      save('tg.center', S.center);
+      S.view = 'home';
+    } else if (S.center && r.teacher.centers.indexOf(S.center) >= 0) {
+      S.view = 'home';
+    } else {
+      S.center = null;
+      S.view = 'pick';
+    }
+    if (S.view === 'home') await go('home'); else render();
+  } catch (err) {
+    toast(err.message);
+    btn.disabled = false; btn.textContent = 'تسجيل الدخول';
+  }
+});
+
+function logout(silent) {
+  S.session = null; S.center = null; S.assign = {}; S.tt = null; S.att = freshAtt(); S.arch = { level: null, data: null, mode: 'all', month: '', group: '', q: '' };
+  localStorage.removeItem('tg.session'); localStorage.removeItem('tg.center');
+  S.view = 'home';
+  if (silent) toast('انتهت الجلسة. سجّل الدخول من جديد.');
+  render();
+}
+
+// ============================================================ start
+(async function start() {
+  if (S.session && S.center) {
+    S.view = 'home';
+    render();
+    try { await go('home'); } catch (e) { toast(e.message); }
+  } else if (S.session) {
+    S.view = 'pick'; render();
+  } else {
+    render();
+  }
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
