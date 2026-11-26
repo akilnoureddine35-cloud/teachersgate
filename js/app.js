@@ -3,7 +3,7 @@
    Speed: data is kept on the phone (localStorage) and shown at once; fresh data is loaded in the background. */
 
 // ============================================================ settings
-const API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';   // Web app URL of the Apps Script backend (see GUIDE.md)
+const API_URL = 'https://script.google.com/macros/s/AKfycbw0oU6NGphnjOowb1XWzdHcpESgh0eG78vFlKOhG_iNHF6_5S9mg7QHAPW3OmQiD242tQ/exec';   // Web app URL of the Apps Script backend (see GUIDE.md)
 const VERSION = '1.8.0';
 const CENTERS = {
   ouahsnan: { nameAr: 'مركز وحسنان للتكوين', logo: 'img/logo_ouahsnan.png' },
